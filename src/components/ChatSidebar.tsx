@@ -1,4 +1,4 @@
-import { Plus, Edit2, Trash2, Menu, X } from 'lucide-react';
+import { Plus, Edit2, Trash2, X, Sparkles } from 'lucide-react';
 import { Button } from './ui/button';
 import { ScrollArea } from './ui/scroll-area';
 import { Conversation } from '@/types/chat';
@@ -30,7 +30,7 @@ export const ChatSidebar = ({
       {/* Mobile overlay */}
       <div
         className={cn(
-          'fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden transition-opacity duration-300',
+          'fixed inset-0 bg-black/40 backdrop-blur-md z-40 lg:hidden transition-opacity duration-300',
           isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'
         )}
         onClick={onToggle}
@@ -39,50 +39,72 @@ export const ChatSidebar = ({
       {/* Sidebar */}
       <aside
         className={cn(
-          'fixed lg:relative top-0 left-0 h-full w-72 bg-card border-r border-border z-50 transition-transform duration-300 flex flex-col',
+          'fixed lg:relative top-0 left-0 h-full w-80 glass-strong z-50 transition-all duration-500 flex flex-col border-r border-white/10',
           isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         )}
       >
-        {/* Header */}
-        <div className="p-4 border-b border-border flex items-center justify-between lg:justify-center">
-          <Button onClick={onNewChat} className="flex-1 lg:w-full gap-2 bg-gradient-primary hover:opacity-90">
-            <Plus className="w-4 h-4" />
-            New Chat
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="lg:hidden ml-2"
-            onClick={onToggle}
+        {/* Header with logo */}
+        <div className="p-6 border-b border-white/10">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center animate-glow">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+              <div>
+                <h1 className="text-lg font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  AI Chat
+                </h1>
+                <p className="text-xs text-muted-foreground">Neural Assistant</p>
+              </div>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="lg:hidden hover:bg-white/10 rounded-2xl"
+              onClick={onToggle}
+            >
+              <X className="w-5 h-5" />
+            </Button>
+          </div>
+          
+          <Button 
+            onClick={onNewChat} 
+            className="w-full gap-2 bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg glow-cyan rounded-2xl h-12 font-semibold"
           >
-            <X className="w-5 h-5" />
+            <Plus className="w-5 h-5" />
+            New Conversation
           </Button>
         </div>
 
         {/* Chat list */}
-        <ScrollArea className="flex-1">
-          <div className="p-3 space-y-1">
+        <ScrollArea className="flex-1 px-3 py-4">
+          <div className="space-y-2">
             {[...conversations].reverse().map((conv) => (
               <div
                 key={conv.id}
                 onClick={() => onSelectChat(conv.id)}
                 className={cn(
-                  'group relative p-3 rounded-lg cursor-pointer transition-all duration-200',
-                  'hover:bg-secondary/50',
+                  'group relative p-4 rounded-2xl cursor-pointer transition-all duration-300',
+                  'hover:glass-strong',
                   activeId === conv.id
-                    ? 'bg-secondary border-l-2 border-primary shadow-sm'
-                    : ''
+                    ? 'glass-strong border border-primary/30 shadow-lg glow-cyan'
+                    : 'hover:border hover:border-white/10'
                 )}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium truncate flex-1">
-                    {conv.title}
-                  </span>
-                  <div className="hidden group-hover:flex items-center gap-1">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">
+                      {conv.title}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {new Date(conv.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="hidden group-hover:flex items-center gap-1 shrink-0">
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7"
+                      className="h-8 w-8 hover:bg-white/10 rounded-xl"
                       onClick={(e) => {
                         e.stopPropagation();
                         onRenameChat(conv.id);
@@ -93,7 +115,7 @@ export const ChatSidebar = ({
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 rounded-xl"
                       onClick={(e) => {
                         e.stopPropagation();
                         onDeleteChat(conv.id);
@@ -109,12 +131,17 @@ export const ChatSidebar = ({
         </ScrollArea>
 
         {/* Footer */}
-        <div className="p-4 border-t border-border">
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-secondary/30 hover:bg-secondary/50 cursor-pointer transition-colors">
-            <div className="w-8 h-8 rounded-lg bg-gradient-primary flex items-center justify-center text-sm font-semibold">
-              U
+        <div className="p-4 border-t border-white/10">
+          <div className="glass p-4 rounded-2xl hover:glass-strong cursor-pointer transition-all group">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-white/10 group-hover:scale-110 transition-transform">
+                <span className="text-sm font-bold">U</span>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-medium">User</p>
+                <p className="text-xs text-muted-foreground">Free Plan</p>
+              </div>
             </div>
-            <span className="text-sm font-medium">User</span>
           </div>
         </div>
       </aside>

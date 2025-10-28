@@ -1,6 +1,6 @@
 import { Message } from '@/types/chat';
 import { cn } from '@/lib/utils';
-import { Copy, Download } from 'lucide-react';
+import { Download, Bot, User } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 
@@ -13,24 +13,24 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
     if (!text) return '';
 
     // Convert headings
-    text = text.replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mt-4 mb-2">$1</h3>');
-    text = text.replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-4 mb-2 border-b border-primary/30 pb-2">$1</h2>');
-    text = text.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mt-4 mb-2 border-b-2 border-primary pb-2">$1</h1>');
+    text = text.replace(/^### (.*$)/gm, '<h3 class="text-lg font-semibold mt-4 mb-2 text-primary">$1</h3>');
+    text = text.replace(/^## (.*$)/gm, '<h2 class="text-xl font-semibold mt-4 mb-2 text-primary">$1</h2>');
+    text = text.replace(/^# (.*$)/gm, '<h1 class="text-2xl font-bold mt-4 mb-2 text-primary">$1</h1>');
 
     // Convert **bold**
-    text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+    text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-semibold text-primary">$1</strong>');
 
     // Convert *italic*
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
     // Convert `code`
-    text = text.replace(/`([^`]+)`/g, '<code class="bg-muted px-1.5 py-0.5 rounded text-sm font-mono">$1</code>');
+    text = text.replace(/`([^`]+)`/g, '<code class="glass px-2 py-0.5 rounded-lg text-sm font-mono text-accent">$1</code>');
 
     // Convert code blocks
     text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
       return `<div class="relative group my-4">
-        <pre class="bg-muted p-4 rounded-lg overflow-x-auto"><code class="text-sm font-mono">${escapeHtml(code)}</code></pre>
-        <button class="copy-code-btn absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-secondary px-3 py-1 rounded text-xs hover:bg-secondary/80" data-code="${escapeHtml(code).replace(/"/g, '&quot;')}">
+        <pre class="glass-strong p-4 rounded-2xl overflow-x-auto border border-white/10"><code class="text-sm font-mono">${escapeHtml(code)}</code></pre>
+        <button class="copy-code-btn absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity glass px-3 py-1.5 rounded-xl text-xs hover:glass-strong" data-code="${escapeHtml(code).replace(/"/g, '&quot;')}">
           Copy
         </button>
       </div>`;
@@ -72,20 +72,26 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
   return (
     <div
       className={cn(
-        'flex w-full py-6 px-4',
+        'flex w-full py-8 px-6 gap-4 animate-fade-in',
         message.role === 'user' ? 'justify-end' : 'justify-start'
       )}
     >
+      {message.role === 'ai' && (
+        <div className="shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-white/10 animate-glow">
+          <Bot className="w-5 h-5 text-primary" />
+        </div>
+      )}
+
       <div
         className={cn(
-          'max-w-[80%] lg:max-w-[70%] rounded-2xl px-5 py-3.5 shadow-sm',
+          'max-w-[75%] lg:max-w-[65%] rounded-3xl px-6 py-4 transition-all duration-300 hover:scale-[1.02]',
           message.role === 'user'
-            ? 'bg-gradient-primary text-primary-foreground'
-            : 'bg-card border border-border'
+            ? 'bg-gradient-to-br from-primary to-accent text-primary-foreground shadow-xl glow-cyan'
+            : 'glass-strong border border-white/10 shadow-lg'
         )}
       >
         {message.meta?.hasImage && (
-          <div className="text-xs opacity-70 mb-2 flex items-center gap-1.5">
+          <div className="text-xs opacity-70 mb-3 flex items-center gap-2 glass px-3 py-1.5 rounded-xl w-fit">
             <span>📷</span> Image attached
           </div>
         )}
@@ -97,24 +103,30 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
         />
 
         {message.meta?.generatedImage && (
-          <div className="mt-4">
+          <div className="mt-4 space-y-3">
             <img
               src={message.meta.generatedImage}
               alt="Generated"
-              className="rounded-lg max-w-full h-auto border border-border cursor-pointer hover:opacity-90 transition-opacity"
+              className="rounded-2xl max-w-full h-auto border border-white/10 cursor-pointer hover:scale-105 transition-transform shadow-xl"
             />
             <Button
               variant="outline"
               size="sm"
-              className="mt-2 gap-2"
+              className="gap-2 glass hover:glass-strong border-white/10 rounded-xl"
               onClick={() => handleDownloadImage(message.meta!.generatedImage!)}
             >
               <Download className="w-3.5 h-3.5" />
-              Download
+              Download Image
             </Button>
           </div>
         )}
       </div>
+
+      {message.role === 'user' && (
+        <div className="shrink-0 w-10 h-10 rounded-2xl bg-gradient-to-br from-accent/20 to-primary/20 flex items-center justify-center border border-white/10">
+          <User className="w-5 h-5 text-accent" />
+        </div>
+      )}
     </div>
   );
 };
