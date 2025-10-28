@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { Menu, Sparkles } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ChatSidebar } from '@/components/ChatSidebar';
@@ -30,7 +30,7 @@ const Index = () => {
       messages: [
         {
           role: 'ai',
-          text: '👋 Hello! I\'m your AI assistant powered by advanced neural networks. How can I help you today?',
+          text: 'Hello! I\'m your AI assistant. How can I help you today?',
           time: Date.now(),
         },
       ],
@@ -45,10 +45,12 @@ const Index = () => {
     };
   });
 
+  // Save to localStorage whenever state changes
   useEffect(() => {
     localStorage.setItem('ai_chat_state', JSON.stringify(state));
   }, [state]);
 
+  // Scroll to bottom on new messages
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
@@ -65,7 +67,7 @@ const Index = () => {
       messages: [
         {
           role: 'ai',
-          text: '👋 Hello! I\'m your AI assistant. How can I help you today?',
+          text: 'Hello! I\'m your AI assistant. How can I help you today?',
           time: Date.now(),
         },
       ],
@@ -78,7 +80,7 @@ const Index = () => {
     }));
 
     setSidebarOpen(false);
-    toast.success('New conversation started');
+    toast.success('New chat created');
   };
 
   const handleSelectChat = (id: string) => {
@@ -91,11 +93,11 @@ const Index = () => {
 
   const handleDeleteChat = (id: string) => {
     if (state.conversations.length <= 1) {
-      toast.error('You need at least one conversation');
+      toast.error('You need at least one chat');
       return;
     }
 
-    if (confirm('Delete this conversation?')) {
+    if (confirm('Are you sure you want to delete this chat?')) {
       setState((prev) => {
         const newConversations = prev.conversations.filter((c) => c.id !== id);
         const newActiveId =
@@ -108,7 +110,7 @@ const Index = () => {
         };
       });
 
-      toast.success('Conversation deleted');
+      toast.success('Chat deleted');
     }
   };
 
@@ -125,7 +127,7 @@ const Index = () => {
           c.id === chatToRename ? { ...c, title: newTitle } : c
         ),
       }));
-      toast.success('Conversation renamed');
+      toast.success('Chat renamed');
     }
   };
 
@@ -158,6 +160,7 @@ const Index = () => {
   };
 
   const handleSendMessage = async (message: string) => {
+    // Auto-update chat title on first user message
     const conv = activeConversation;
     if (conv && conv.messages.filter((m) => m.role === 'user').length === 0) {
       updateChatTitle(conv.id, message);
@@ -166,12 +169,13 @@ const Index = () => {
     addMessage('user', message);
     setIsProcessing(true);
 
+    // Simulate AI response
     setTimeout(() => {
       const responses = [
-        'That\'s a great question! Let me provide you with a detailed answer...',
-        'I understand what you\'re asking. Here\'s what I know about that...',
-        'Interesting! Based on my training data, here\'s my perspective...',
-        'Let me break this down for you in a clear way...',
+        'That\'s an interesting question! Let me help you with that.',
+        'I understand what you\'re asking. Here\'s what I think...',
+        'Great question! Based on my knowledge...',
+        'Let me break this down for you.',
       ];
       const response = responses[Math.floor(Math.random() * responses.length)];
       addMessage('ai', response);
@@ -184,19 +188,19 @@ const Index = () => {
     setIsProcessing(true);
 
     setTimeout(() => {
-      addMessage('ai', '🖼️ I can see your image! This appears to be an interesting visual. Based on my analysis, I can provide detailed insights about what I\'m seeing...');
+      addMessage('ai', 'I can see the image you uploaded. This appears to be an interesting visual. Let me analyze it for you...');
       setIsProcessing(false);
     }, 2000);
   };
 
   const handleGenerateImage = async (prompt: string) => {
-    addMessage('user', `🎨 Generate: ${prompt}`);
+    addMessage('user', `Generate image: ${prompt}`);
     setIsProcessing(true);
 
     setTimeout(() => {
       addMessage(
         'ai',
-        '✨ Your image has been generated successfully!',
+        'Image generated successfully!',
         {
           generatedImage: 'https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?w=800',
           imagePrompt: prompt,
@@ -208,7 +212,7 @@ const Index = () => {
   };
 
   const handleRecordVoice = () => {
-    toast.info('🎤 Voice recording activated');
+    toast.info('Voice recording feature would be activated here');
   };
 
   const handlePlayTTS = () => {
@@ -222,11 +226,11 @@ const Index = () => {
       return;
     }
 
-    toast.info('🔊 Playing AI voice');
+    toast.info('Text-to-speech would play here');
   };
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <div className="flex h-screen overflow-hidden bg-background">
       <ChatSidebar
         conversations={state.conversations}
         activeId={state.activeId}
@@ -240,33 +244,23 @@ const Index = () => {
 
       <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
-        <header className="flex items-center gap-4 px-6 py-4 glass-strong border-b border-white/10 backdrop-blur-xl z-10">
+        <header className="flex items-center gap-3 px-4 py-3 border-b border-border bg-background/80 backdrop-blur-sm">
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden hover:glass rounded-2xl"
+            className="lg:hidden"
             onClick={() => setSidebarOpen(true)}
           >
             <Menu className="w-5 h-5" />
           </Button>
-          <div className="flex items-center gap-3 flex-1">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-white/10 animate-pulse">
-              <Sparkles className="w-4 h-4 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-base font-semibold">
-                {activeConversation?.title || 'AI Assistant'}
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                {activeConversation?.messages.length || 0} messages
-              </p>
-            </div>
-          </div>
+          <h1 className="text-lg font-semibold">
+            {activeConversation?.title || 'AI Assistant'}
+          </h1>
         </header>
 
         {/* Messages */}
         <ScrollArea className="flex-1" ref={scrollRef}>
-          <div className="max-w-5xl mx-auto pb-4">
+          <div className="max-w-4xl mx-auto">
             {activeConversation?.messages.map((message, idx) => (
               <ChatMessage key={idx} message={message} />
             ))}

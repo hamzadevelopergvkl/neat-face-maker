@@ -8,7 +8,6 @@ import {
 } from './ui/dialog';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
-import { Edit2 } from 'lucide-react';
 
 interface RenameModalProps {
   isOpen: boolean;
@@ -39,39 +38,26 @@ export const RenameModal = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md glass-strong border-white/10 rounded-3xl backdrop-blur-2xl">
+      <DialogContent className="sm:max-w-md bg-card border-border">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-3 text-xl">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center border border-white/10">
-                <Edit2 className="w-5 h-5 text-primary" />
-              </div>
-              Rename Conversation
-            </DialogTitle>
+            <DialogTitle>Rename Chat</DialogTitle>
           </DialogHeader>
-          <div className="py-6">
+          <div className="py-4">
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter new name..."
-              className="w-full glass border-white/10 rounded-2xl h-12 text-base focus-visible:ring-primary focus-visible:border-primary/50"
+              placeholder="Enter new chat name..."
+              className="w-full"
               autoFocus
             />
           </div>
-          <DialogFooter className="gap-2">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onClose}
-              className="glass border-white/10 hover:glass-strong rounded-2xl"
-            >
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button 
-              type="submit" 
-              className="bg-gradient-to-r from-primary to-accent hover:opacity-90 shadow-lg glow-cyan rounded-2xl"
-            >
-              Save Changes
+            <Button type="submit" className="bg-gradient-primary hover:opacity-90">
+              Rename
             </Button>
           </DialogFooter>
         </form>
